@@ -1,0 +1,9 @@
+# Compiled python code
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+#test data
+data/
