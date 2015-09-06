@@ -1,15 +1,26 @@
-Usage: python cli.py --older-than-days 4  ../data [options] <path>
+===========
+Delete Old Data
+===========
 
 Deletes all data in an hourly partitioned hierarchy older than
 some number of days.  <path> is the base location of the hourly
 partitioned data.
 
-Options:
-  -h --help                      Show this help message and exit.
-  -d --older-than-days=<days>    Drop data older than this number of days.
-                                 [default: 10]
-  -D --dataset-name=<name>       Only delete data for this dataset name.
-                                 If this is not given, all datasets will be
-                                 pruned of old data.
-  -n --dry-run                   Don't actually do anything, just output the
-                                 directories that would have data deleted.
+Usage
+-----
+The client can be used directly from the command line (after installation)::
+
+    delete-old-data --older-than-days 20 --dataset-name my_dataset
+
+
+Installing
+----------
+To install the module from source::
+
+    python setup.py install
+
+Testing
+-------
+To run the unit tests::
+
+    python setup.py test

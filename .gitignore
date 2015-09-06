@@ -5,5 +5,11 @@
 # Logs
 *.log
 
-#test data
+# test data
 data/
+
+# setuptools data
+.eggs/
+build/
+delete_old_data.egg-info/
+dist/

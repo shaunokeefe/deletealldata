@@ -15,7 +15,7 @@ from delete import delete
               help="Don't actually do anything, just output the"
               "directories that would have data deleted")
 @click.argument('path')
-def delete_all_data(older_than_days, dataset_name, dry_run, path):
+def delete_old_data(older_than_days, dataset_name, dry_run, path):
 
     ds_string = " for dataset {0}".format(dataset_name) if dataset_name else ""
     message = "deleting records older than {0} days{1}".format(
@@ -33,4 +33,4 @@ def delete_all_data(older_than_days, dataset_name, dry_run, path):
     delete(path, today, older_than_days, dataset_name, dry_run)
 
 if __name__ == '__main__':
-    delete_all_data()
+    delete_old_data()
