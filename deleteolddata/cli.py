@@ -11,7 +11,7 @@ from delete import delete
 @click.option('--dataset-name', default=None,
               help="Only delete data for this dataset name."
               "If this is not given, all datasets will be pruned of old data")
-@click.option('--dry-run', default=False,
+@click.option('--dry-run', default=False, type=bool, is_flag=True,
               help="Don't actually do anything, just output the"
               "directories that would have data deleted")
 @click.argument('path')
