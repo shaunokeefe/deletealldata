@@ -30,7 +30,7 @@ def delete_all_data(older_than_days, dataset_name, dry_run):
     if dry_run:
         print "Dry run - will not delete any files"
 
-    delete(older_than_days, dataset_name, dry_run)
+    delete(top_directory, today, older_than_days, dataset_name, dry_run)
 
 if __name__ == '__main__':
     delete_all_data()

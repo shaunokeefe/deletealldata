@@ -3,7 +3,7 @@ import mock
 import unittest
 
 from deleteolddata.delete import date_from_days, calculate_recursion_depth,\
-    process_directories
+    process_directories, delete
 
 
 class CalculateOlderTest(unittest.TestCase):
@@ -88,8 +88,9 @@ class ProcessDirectoriesTest(unittest.TestCase):
         current_level = 'dataset'
         directories = ['dataset1', 'dataset2', 'dataset3']
         dry_run = False
+        root = "/root"
 
-        process_directories(directories, filters, current_level, dry_run)
+        process_directories(root, directories, filters, current_level, dry_run)
 
         self.assertEqual(len(directories), 1)
         self.assertEqual(directories[0], 'dataset1')
@@ -106,12 +107,13 @@ class ProcessDirectoriesTest(unittest.TestCase):
         current_level = 'year'
         directories = ['2013', '2014', '2015']
         dry_run = False
+        root = "/root/dataset"
 
-        process_directories(directories, filters, current_level, dry_run)
+        process_directories(root, directories, filters, current_level, dry_run)
 
         self.assertEqual(len(directories), 1)
         self.assertTrue('2014' in directories)
-        remove_directory_mock.assert_has_calls([mock.call('2013', False)])
+        remove_directory_mock.assert_has_calls([mock.call('/root/dataset/2013', False)])
 
     @mock.patch('deleteolddata.delete.remove_directory')
     def test_month(self, remove_directory_mock):
@@ -125,12 +127,13 @@ class ProcessDirectoriesTest(unittest.TestCase):
         current_level = 'month'
         directories = ['09', '08', '01']
         dry_run = False
+        root = "/root/dataset/year"
 
-        process_directories(directories, filters, current_level, dry_run)
+        process_directories(root, directories, filters, current_level, dry_run)
 
         self.assertEqual(len(directories), 1)
         self.assertTrue('09' in directories)
-        remove_directory_mock.assert_has_calls([mock.call('08', False), mock.call('01', False)])
+        remove_directory_mock.assert_has_calls([mock.call('/root/dataset/year/08', False), mock.call('/root/dataset/year/01', False)])
 
     @mock.patch('deleteolddata.delete.remove_directory')
     def test_no_directories_to_process(self, remove_directory_mock):
@@ -143,12 +146,58 @@ class ProcessDirectoriesTest(unittest.TestCase):
         }
         current_level = 'day'
         directories = []
+        root = "/root"
         dry_run = False
 
-        process_directories(directories, filters, current_level, dry_run)
+        process_directories(root, directories, filters, current_level, dry_run)
 
         self.assertEqual(len(directories), 0)
         self.assertEqual(remove_directory_mock.call_count, 0)
+
+
+class DeleteTest(unittest.TestCase):
+
+    @mock.patch('deleteolddata.delete.remove_directory')
+    def test_delete_no_dataset_specified(self, remove_directory_mock):
+        today = datetime.date(2015, 9, 6)
+        days = 4
+        top_directory = './test/fixtures/fake_directory'
+        dataset_name = None
+        dry_run = False
+
+        delete(top_directory, today, days, dataset_name, dry_run)
+
+        expected_calls = [
+            mock.call('./test/fixtures/fake_directory/dataset1/2014', False),
+            mock.call('./test/fixtures/fake_directory/dataset1/2015/08', False),
+            mock.call('./test/fixtures/fake_directory/dataset1/2015/09/01', False),
+            mock.call('./test/fixtures/fake_directory/dataset2/2014', False),
+            mock.call('./test/fixtures/fake_directory/dataset2/2015/08', False),
+            mock.call('./test/fixtures/fake_directory/dataset2/2015/09/01', False)
+        ]
+
+        self.assertEqual(remove_directory_mock.call_count, 6)
+        remove_directory_mock.assert_has_calls(expected_calls)
+
+    @mock.patch('deleteolddata.delete.remove_directory')
+    def test_delete_with_dataset_specified(self, remove_directory_mock):
+        today = datetime.date(2015, 9, 6)
+        days = 4
+        top_directory = './test/fixtures/fake_directory'
+        dataset_name = 'dataset1'
+        dry_run = False
+
+        delete(top_directory, today, days, dataset_name, dry_run)
+
+        expected_calls = [
+            mock.call('./test/fixtures/fake_directory/dataset1/2014', False),
+            mock.call('./test/fixtures/fake_directory/dataset1/2015/08', False),
+            mock.call('./test/fixtures/fake_directory/dataset1/2015/09/01', False),
+        ]
+
+        self.assertEqual(remove_directory_mock.call_count, 3)
+        remove_directory_mock.assert_has_calls(expected_calls)
+
 
 if __name__ == '__main__':
     unittest.main()
