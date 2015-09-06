@@ -1,7 +1,7 @@
 import unittest
 import datetime
 
-from deleteolddata.delete import date_from_days
+from deleteolddata.delete import date_from_days, calculate_recursion_depth
 
 
 class CalculateOlderTest(unittest.TestCase):
@@ -37,6 +37,40 @@ class CalculateOlderTest(unittest.TestCase):
         self.assertEqual(year, 2015)
         self.assertEqual(month, 9)
         self.assertEqual(day, 6)
+
+
+class CalculateCurrentLevelTest(unittest.TestCase):
+    def test_year(self):
+        root = "/first/second"
+        current = "/first/second/dataset/year"
+
+        level = calculate_recursion_depth(root, current)
+
+        self.assertEqual(level, 'month')
+
+    def test_dataset(self):
+        root = "/first/second"
+        current = "/first/second"
+
+        level = calculate_recursion_depth(root, current)
+
+        self.assertEqual(level, 'dataset')
+
+    def test_month(self):
+        root = "/first/second"
+        current = "/first/second/dataset/year"
+
+        level = calculate_recursion_depth(root, current)
+
+        self.assertEqual(level, 'month')
+
+    def test_day(self):
+        root = "/first/second"
+        current = "/first/second/dataset/year/month"
+
+        level = calculate_recursion_depth(root, current)
+
+        self.assertEqual(level, 'day')
 
 if __name__ == '__main__':
     unittest.main()
