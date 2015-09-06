@@ -1,9 +1,13 @@
 import os
 import datetime
+import shutil
 
 
 def remove_directory(directory, dry_run):
-    pass
+    print "deleting directory: {0}".format(directory)
+    if dry_run:
+        return
+    shutil.rmtree(directory)
 
 
 def date_from_days(today, days):
